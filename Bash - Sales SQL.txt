@@ -1,0 +1,33 @@
+﻿#!/bin/bash
+database='sales'
+output='q03.sql'
+
+# Check if the output file exists or create one
+if [ -e $output ]; then
+    rm $output
+fi
+touch $output
+
+# Source environment variables
+source ../q02/q02.env
+
+# Get the number of owners from the database
+echo "USE $database;" > temp.sql
+echo "SELECT COUNT(*) FROM owners;" >> temp.sql
+num_owners=$(mysql -N -u $MYSQL_ADMIN -p$MYSQL_PAD < temp.sql 2>/dev/null)
+
+# Initialize the output SQL file
+echo "USE $database;" > $output
+
+# Loop through each owner_id
+for ((i = 1; i <= num_owners; i++)); do
+    echo "SELECT fname, lname, owner_id FROM owners WHERE owner_id=$i;" >> $output
+    echo "SELECT COUNT(*) FROM dealers WHERE owner_id=$i;" >> $output
+    echo "SELECT fname, lname, owner_id FROM agents WHERE owner_id=$i;" >> $output
+done
+
+# Remove temporary SQL data
+rm temp.sql
+
+# Display total owners
+echo "Total owners: $num_owners"
