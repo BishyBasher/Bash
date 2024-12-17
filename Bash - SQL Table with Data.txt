@@ -1,15 +1,26 @@
-﻿#!/bin/bash
+#!/bin/bash
+
+#Switch context to SQL budget database
 echo "USE budget;"
-echo "CREATE IF NOOT EXISTS TABLE expenses( name_id INT, fname
+
+#Create expenses table with attributes
+echo "CREATE IF NOT EXISTS TABLE expenses( name_id INT, fname
 VARCHAR(25),"
 echo "lname VARCHAR(25), item VARCHAR(25), cost DECIMAL (8,2)
 NOT NULL,"
 echo "edate DATE, primary key (expense_id) );"
+
+#Create array variable
 declare -a line
+#Reads txt file and stores in array variable
 while read -a line
 do
+
+#Inserts data into expenses table
 echo "INSERT INTO expenses ( name_id, fname, lname, item,
 cost, edate )"
+
+#Extract and format data
 lname=${line[0]}
 fname=${line[1]}
 name_id=${line[2]}
@@ -22,7 +33,10 @@ name_id=${name_id/ID=/}
 item=${item/ITEM=/}
 cost=${cost/COST=/}
 date=${date/DATE=/}
+
+#prints entire array variable
 echo ${line[@]}
+
 echo "VALUES( '$name_id', '$fname', '$lname', '$item',
 '$cost', '$date' );"
 done < dec.txt
